@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/allinbits/cosmos-cli/genny/app"
+	"github.com/allinbits/cosmos-cli/templates/app"
 	"github.com/gobuffalo/genny"
 	"github.com/spf13/cobra"
 )
