@@ -1,3 +1,3 @@
 #!/bin/sh
 
-rm -rf testapp && make && ./build/cosmos app github.com/fadeev/testapp && cd testapp && ../build/cosmos type task title
+rm -rf blog && make && ./build/cosmos app github.com/fadeev/blog && cd blog && ../build/cosmos type post title body
