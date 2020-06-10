@@ -17,6 +17,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn(aliasModify(opts))
 	g.RunFn(keyModify(opts))
 	g.RunFn((codecModify(opts)))
+	g.RunFn((cliTxModify(opts)))
 	if err := g.Box(packr.New("new/templates", "./templates")); err != nil {
 		return g, err
 	}
@@ -24,6 +25,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	ctx.Set("AppName", opts.AppName)
 	ctx.Set("TypeName", opts.TypeName)
 	ctx.Set("ModulePath", opts.ModulePath)
+	ctx.Set("Fields", opts.Fields)
 	ctx.Set("title", func(s string) string {
 		return strings.Title(s)
 	})
@@ -100,6 +102,21 @@ func codecModify(opts *Options) genny.RunFn {
 	cdc.RegisterConcrete(MsgCreate%[1]v{}, "%[2]v/Create%[1]v", nil)
 `, strings.Title(opts.TypeName), opts.AppName)
 		content := strings.Replace(f.String(), "func RegisterCodec(cdc *codec.Codec) {", replaceContent, 1)
+		newFile := genny.NewFileS(path, content)
+		return r.File(newFile)
+	}
+}
+
+func cliTxModify(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		path := fmt.Sprintf("x/%s/client/cli/tx.go", opts.AppName)
+		f, err := r.Disk.Find(path)
+		if err != nil {
+			return err
+		}
+		replaceContent := fmt.Sprintf(`TxCmd.AddCommand(flags.PostCommands(
+	  GetCmdCreate%[1]v(cdc),`, strings.Title(opts.TypeName), opts.AppName)
+		content := strings.Replace(f.String(), "TxCmd.AddCommand(flags.PostCommands(", replaceContent, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}

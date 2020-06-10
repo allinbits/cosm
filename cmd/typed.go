@@ -12,9 +12,9 @@ import (
 )
 
 var typedCmd = &cobra.Command{
-	Use:   "type [typeName]",
+	Use:   "type [typeName] [field1] [field2] ...",
 	Short: "Generates CRUD actions for type",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		goModFile, err := ioutil.ReadFile("go.mod")
 		if err != nil {
@@ -30,6 +30,7 @@ var typedCmd = &cobra.Command{
 			ModulePath: modulePath,
 			AppName:    appName,
 			TypeName:   args[0],
+			Fields:     args[1:],
 		})
 		run := genny.WetRunner(context.Background())
 		run.With(g)

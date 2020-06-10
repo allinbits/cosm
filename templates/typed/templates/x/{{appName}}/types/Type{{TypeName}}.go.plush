@@ -6,5 +6,6 @@ import (
 
 type <%= title(TypeName) %> struct {
 	Creator sdk.AccAddress `json:"creator" yaml:"creator"`
-	ID      string         `json:"id" yaml:"id"`
+	ID      string         `json:"id" yaml:"id"`<%= for (field) in Fields { %>
+  <%= title(field) %> string `json:"<%= field %>" yaml:"<%= field %>"`<% } %>
 }
