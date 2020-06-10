@@ -1,0 +1,17 @@
+package <%= AppName %>
+
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"<%= ModulePath %>/x/<%= AppName %>/types"
+	"github.com/google/uuid"
+)
+
+func handleMsgCreate<%= title(TypeName) %>(ctx sdk.Context, k Keeper, msg MsgCreate<%= title(TypeName) %>) (*sdk.Result, error) {
+	var <%= TypeName %> = types.<%= title(TypeName) %>{
+		Creator: msg.Creator,
+		ID:      uuid.New().String(),
+	}
+	k.Create<%= title(TypeName) %>(ctx, <%= TypeName %>)
+
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}

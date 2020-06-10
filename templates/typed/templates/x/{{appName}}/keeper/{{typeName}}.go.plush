@@ -1,0 +1,13 @@
+package keeper
+
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"<%= ModulePath %>/x/<%= AppName %>/types"
+)
+
+func (k Keeper) Create<%= title(TypeName) %>(ctx sdk.Context, <%= TypeName %> types.<%= title(TypeName) %>) {
+	store := ctx.KVStore(k.storeKey)
+	key := []byte(types.<%= title(TypeName) %>Prefix + <%= TypeName %>.ID)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(<%= TypeName %>)
+	store.Set(key, value)
+}

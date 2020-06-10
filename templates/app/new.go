@@ -19,6 +19,6 @@ func New(opts *Options) (*genny.Generator, error) {
 	ctx.Set("ModulePath", opts.ModulePath)
 	ctx.Set("AppName", opts.AppName)
 	g.Transformer(plushgen.Transformer(ctx))
-	g.Transformer(genny.Replace("{{appname}}", fmt.Sprintf("%s", opts.AppName)))
+	g.Transformer(genny.Replace("{{appName}}", fmt.Sprintf("%s", opts.AppName)))
 	return g, nil
 }
