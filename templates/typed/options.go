@@ -1,6 +1,6 @@
 package typed
 
-// Options for generating coke
+// Options ...
 type Options struct {
 	AppName    string
 	ModulePath string
