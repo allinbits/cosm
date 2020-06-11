@@ -29,11 +29,19 @@ func New(opts *Options) (*genny.Generator, error) {
 	ctx.Set("title", func(s string) string {
 		return strings.Title(s)
 	})
+	ctx.Set("strconv", func() bool {
+		strconv := false
+		for _, field := range opts.Fields {
+			if field.Datatype != "string" {
+				strconv = true
+			}
+		}
+		return strconv
+	})
 	g.Transformer(plushgen.Transformer(ctx))
 	g.Transformer(genny.Replace("{{appName}}", fmt.Sprintf("%s", opts.AppName)))
 	g.Transformer(genny.Replace("{{typeName}}", fmt.Sprintf("%s", opts.TypeName)))
 	g.Transformer(genny.Replace("{{TypeName}}", fmt.Sprintf("%s", strings.Title(opts.TypeName))))
-	// g.Transformer(handlerEdit())
 	return g, nil
 }
 

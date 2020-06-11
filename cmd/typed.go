@@ -26,11 +26,30 @@ var typedCmd = &cobra.Command{
 		if t := strings.Split(modulePath, "/"); len(t) > 0 {
 			appName = t[len(t)-1]
 		}
+		var fields []typed.Field
+		for _, f := range args[1:] {
+			fs := strings.Split(f, ":")
+			name := fs[0]
+			var datatype string
+			acceptedTypes := map[string]bool{
+				"string": true,
+				"bool":   true,
+				"int":    true,
+				"float":  true,
+			}
+			if len(fs) == 2 && acceptedTypes[fs[1]] {
+				datatype = fs[1]
+			} else {
+				datatype = "string"
+			}
+			field := typed.Field{Name: name, Datatype: datatype}
+			fields = append(fields, field)
+		}
 		g, _ := typed.New(&typed.Options{
 			ModulePath: modulePath,
 			AppName:    appName,
 			TypeName:   args[0],
-			Fields:     args[1:],
+			Fields:     fields,
 		})
 		run := genny.WetRunner(context.Background())
 		run.With(g)

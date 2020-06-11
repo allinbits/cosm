@@ -1,11 +1,17 @@
 package typed
 
+// Field ...
+type Field struct {
+	Name     string
+	Datatype string
+}
+
 // Options ...
 type Options struct {
 	AppName    string
 	ModulePath string
 	TypeName   string
-	Fields     []string
+	Fields     []Field
 }
 
 // Validate that options are usuable

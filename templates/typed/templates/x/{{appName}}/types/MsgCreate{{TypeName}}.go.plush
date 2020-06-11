@@ -9,13 +9,13 @@ var _ sdk.Msg = &MsgCreate<%= title(TypeName) %>{}
 
 type MsgCreate<%= title(TypeName) %> struct {
   Creator sdk.AccAddress `json:"creator" yaml:"creator"`<%= for (field) in Fields { %>
-  <%= title(field) %> string `json:"<%= field %>" yaml:"<%= field %>"`<% } %>
+  <%= title(field.Name) %> <%= field.Datatype %> `json:"<%= field.Name %>" yaml:"<%= field.Name %>"`<% } %>
 }
 
-func NewMsgCreate<%= title(TypeName) %>(creator sdk.AccAddress<%= for (field) in Fields { %>, <%= field %> string<% } %>) MsgCreate<%= title(TypeName) %> {
+func NewMsgCreate<%= title(TypeName) %>(creator sdk.AccAddress<%= for (field) in Fields { %>, <%= field.Name %> <%= field.Datatype %><% } %>) MsgCreate<%= title(TypeName) %> {
   return MsgCreate<%= title(TypeName) %>{
 		Creator: creator,<%= for (field) in Fields { %>
-    <%= title(field) %>: <%= field %>,<% } %>
+    <%= title(field.Name) %>: <%= field.Name %>,<% } %>
 	}
 }
 
