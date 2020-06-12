@@ -18,6 +18,9 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn(keyModify(opts))
 	g.RunFn((codecModify(opts)))
 	g.RunFn((cliTxModify(opts)))
+	g.RunFn((cliQueryModify(opts)))
+	g.RunFn((querierModify(opts)))
+	g.RunFn((keeperQuerierModify(opts)))
 	if err := g.Box(packr.New("new/templates", "./templates")); err != nil {
 		return g, err
 	}
@@ -125,6 +128,57 @@ func cliTxModify(opts *Options) genny.RunFn {
 		replaceContent := fmt.Sprintf(`TxCmd.AddCommand(flags.PostCommands(
 	  GetCmdCreate%[1]v(cdc),`, strings.Title(opts.TypeName), opts.AppName)
 		content := strings.Replace(f.String(), "TxCmd.AddCommand(flags.PostCommands(", replaceContent, 1)
+		newFile := genny.NewFileS(path, content)
+		return r.File(newFile)
+	}
+}
+
+func cliQueryModify(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		path := fmt.Sprintf("x/%s/client/cli/query.go", opts.AppName)
+		f, err := r.Disk.Find(path)
+		if err != nil {
+			return err
+		}
+		replaceContent := fmt.Sprintf(`flags.GetCommands(
+			GetCmdList%[1]v(queryRoute, cdc),`, strings.Title(opts.TypeName))
+		content := strings.Replace(f.String(), "flags.GetCommands(", replaceContent, 1)
+		newFile := genny.NewFileS(path, content)
+		return r.File(newFile)
+	}
+}
+
+func querierModify(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		path := fmt.Sprintf("x/%s/types/querier.go", opts.AppName)
+		f, err := r.Disk.Find(path)
+		if err != nil {
+			return err
+		}
+		content := f.String() + fmt.Sprintf(`
+const (QueryList%[2]v = "list-%[1]v")
+`, opts.TypeName, strings.Title(opts.TypeName))
+		newFile := genny.NewFileS(path, content)
+		return r.File(newFile)
+	}
+}
+
+func keeperQuerierModify(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		path := fmt.Sprintf("x/%s/keeper/querier.go", opts.AppName)
+		f, err := r.Disk.Find(path)
+		if err != nil {
+			return err
+		}
+		replaceContentImport := fmt.Sprintf(`import (
+	"%[1]v/x/%[2]v/types"
+`, opts.ModulePath, opts.AppName)
+		replaceContentDefault := fmt.Sprintf(`
+		case types.QueryList%[1]v:
+			return list%[1]v(ctx, k)
+		default:`, strings.Title(opts.TypeName))
+		content := strings.Replace(f.String(), "import (", replaceContentImport, 1)
+		content = strings.Replace(content, "default:", replaceContentDefault, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
