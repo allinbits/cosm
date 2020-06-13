@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/allinbits/cosmos-cli/templates/typed"
+	"github.com/allinbits/cosm/templates/typed"
 	"github.com/gobuffalo/genny"
 	"github.com/spf13/cobra"
 )

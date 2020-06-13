@@ -1,6 +1,6 @@
 package main
 
-import "github.com/allinbits/cosmos-cli/cmd"
+import "github.com/allinbits/cosm/cmd"
 
 func main() {
 	cmd.Execute()

@@ -1,4 +1,4 @@
-module github.com/allinbits/cosmos-cli
+module github.com/allinbits/cosm
 
 go 1.14
 
