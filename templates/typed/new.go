@@ -21,6 +21,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn((cliQueryModify(opts)))
 	g.RunFn((querierModify(opts)))
 	g.RunFn((keeperQuerierModify(opts)))
+	g.RunFn((clientRestRestModify(opts)))
 	if err := g.Box(packr.New("new/templates", "./templates")); err != nil {
 		return g, err
 	}
@@ -179,6 +180,21 @@ func keeperQuerierModify(opts *Options) genny.RunFn {
 		default:`, strings.Title(opts.TypeName))
 		content := strings.Replace(f.String(), "import (", replaceContentImport, 1)
 		content = strings.Replace(content, "default:", replaceContentDefault, 1)
+		newFile := genny.NewFileS(path, content)
+		return r.File(newFile)
+	}
+}
+
+func clientRestRestModify(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		path := fmt.Sprintf("x/%s/client/rest/rest.go", opts.AppName)
+		f, err := r.Disk.Find(path)
+		if err != nil {
+			return err
+		}
+		replaceContent := fmt.Sprintf(`func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
+	r.HandleFunc("/%[1]v/%[3]v", list%[2]vHandler(cliCtx, "%[1]v")).Methods("GET")`, opts.AppName, strings.Title(opts.TypeName), opts.TypeName)
+		content := strings.Replace(f.String(), "func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {", replaceContent, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}

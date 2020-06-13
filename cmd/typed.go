@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"context"
-	"io/ioutil"
-	"log"
 	"strings"
 
 	"github.com/allinbits/cosmos-cli/templates/typed"
@@ -16,16 +14,7 @@ var typedCmd = &cobra.Command{
 	Short: "Generates CRUD actions for type",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		goModFile, err := ioutil.ReadFile("go.mod")
-		if err != nil {
-			log.Fatal(err)
-		}
-		moduleString := strings.Split(string(goModFile), "\n")[0]
-		modulePath := strings.ReplaceAll(moduleString, "module ", "")
-		var appName string
-		if t := strings.Split(modulePath, "/"); len(t) > 0 {
-			appName = t[len(t)-1]
-		}
+		appName, modulePath := getAppAndModule()
 		var fields []typed.Field
 		for _, f := range args[1:] {
 			fs := strings.Split(f, ":")
