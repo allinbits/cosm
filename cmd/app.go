@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
@@ -28,5 +29,6 @@ var appCmd = &cobra.Command{
 		pwd, _ := os.Getwd()
 		run.Root = pwd + "/" + appName
 		run.Run()
+		fmt.Printf("\n🚀 Successfully created a Cosmos project `%[1]v`.\n\n", appName)
 	},
 }

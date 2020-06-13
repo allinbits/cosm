@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/allinbits/cosm/templates/typed"
@@ -43,5 +44,6 @@ var typedCmd = &cobra.Command{
 		run := genny.WetRunner(context.Background())
 		run.With(g)
 		run.Run()
+		fmt.Printf("\n🎉 Created a type `%[1]v`.\n\n", args[0])
 	},
 }
