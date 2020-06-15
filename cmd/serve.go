@@ -2,10 +2,32 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 
+	rice "github.com/GeertJohan/go.rice"
+	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 )
+
+func setupCloseHandler(tendermint *exec.Cmd, rest *exec.Cmd) {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		if err := tendermint.Process.Kill(); err != nil {
+			log.Fatal("failed to kill process: ", err)
+		}
+		if err := rest.Process.Kill(); err != nil {
+			log.Fatal("failed to kill process: ", err)
+		}
+		os.Exit(0)
+	}()
+}
 
 var serveCmd = &cobra.Command{
 	Use:   "serve",
@@ -15,38 +37,33 @@ var serveCmd = &cobra.Command{
 		appName, _ := getAppAndModule()
 		fmt.Printf("\n📦 Installing dependencies...\n")
 		cmdMod := exec.Command("/bin/sh", "-c", "go mod tidy")
-		errMod := cmdMod.Run()
-		if errMod != nil {
-			fmt.Println(errMod.Error())
-			return
+		if err := cmdMod.Run(); err != nil {
+			log.Fatal("Error running go mod tidy. Please, check ./go.mod")
 		}
 		fmt.Printf("🚧 Building the application...\n")
 		cmdMake := exec.Command("/bin/sh", "-c", "make")
-		errMake := cmdMake.Run()
-		if errMake != nil {
-			fmt.Println(errMake.Error())
-			return
+		if err := cmdMake.Run(); err != nil {
+			log.Fatal("Error in building the application. Please, check ./Makefile")
 		}
 		fmt.Printf("💫 Initializing the chain...\n")
 		cmdInit := exec.Command("/bin/sh", "-c", "sh init.sh")
-		errInit := cmdInit.Run()
-		if errInit != nil {
-			fmt.Println(errInit.Error())
-			return
+		if err := cmdInit.Run(); err != nil {
+			log.Fatal("Error in initializing the chain. Please, check ./init.sh")
 		}
 		fmt.Printf("🌍 Running a server at http://localhost:26657 (Tendermint)\n")
-		cmdServer := exec.Command("/bin/sh", "-c", fmt.Sprintf("%[1]vd start", appName))
-		errServer := cmdServer.Start()
-		if errServer != nil {
-			fmt.Println(errServer.Error())
-			return
+		cmdTendermint := exec.Command("/bin/sh", "-c", fmt.Sprintf("%[1]vd start", appName))
+		if err := cmdTendermint.Start(); err != nil {
+			log.Fatal(fmt.Sprintf("Error in running %[1]vd start", appName))
 		}
 		fmt.Printf("🌍 Running a server at http://localhost:1317 (LCD)\n\n")
 		cmdREST := exec.Command(fmt.Sprintf("%[1]vcli", appName), "rest-server")
-		errREST := cmdREST.Run()
-		if errREST != nil {
-			fmt.Println(errREST.Error())
-			return
+		if err := cmdREST.Start(); err != nil {
+			log.Fatal(fmt.Sprintf("Error in running %[1]vcli rest-server", appName))
 		}
+		setupCloseHandler(cmdTendermint, cmdREST)
+		router := mux.NewRouter()
+		cosmUI, _ := rice.FindBox("../ui/dist")
+		router.PathPrefix("/").Handler(http.FileServer(cosmUI.HTTPBox()))
+		log.Fatal(http.ListenAndServe(":12345", router))
 	},
 }
