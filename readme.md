@@ -16,7 +16,7 @@ Note: Make sure to run this command outside of an existing Go project, otherwise
 cosm app [modulePath]
 ```
 
-This command creates an empty template for a Cosmos SDK application. By default it also includes a module named after the name of the package.
+This command creates an empty template for a Cosmos SDK application. By default it also includes a module with the same name as the package.
 
 To create a new application called `blog`, run:
 
