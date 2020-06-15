@@ -1,2 +1,8 @@
 brews:
-  - description: "CLI tool for developing Cosmos SDK apps."
+  - name: "cosm"
+    description: "CLI tool for developing Cosmos SDK apps."
+    github:
+      owner: "allinbits"
+      name: "homebrew-tap"
+    install: |
+      bin.install "cosm"
