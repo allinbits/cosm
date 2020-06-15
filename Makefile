@@ -1,8 +1,5 @@
 all: install
 
-install: build ui
-	@go install -mod=readonly ./...
-
 mod:
 	@go mod tidy
 
@@ -14,5 +11,11 @@ ui:
 	@which npm 1>/dev/null && cd ui && npm install 1>/dev/null && npm run build 1>/dev/null
 
 cli: build
+	@go install -mod=readonly ./...
 
-.PHONY: all mod build ui install cli
+build-ui: build ui
+
+install: build ui
+	@go install -mod=readonly ./...
+
+.PHONY: all mod build ui install cli build-ui
