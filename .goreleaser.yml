@@ -1,2 +1,2 @@
 brews:
-  description: "CLI tool for developing Cosmos SDK apps."
+  - description: "CLI tool for developing Cosmos SDK apps."
