@@ -1,8 +1,5 @@
 builds:
   - main: ./main.go
-    hooks:
-      pre:
-        - cmd: make ui
     env:
       - CGO_ENABLED=0
     ldflags:
