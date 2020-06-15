@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gobuffalo/genny"
-	"github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr"
 	"github.com/gobuffalo/plush"
 	"github.com/gobuffalo/plushgen"
 )
@@ -12,7 +12,7 @@ import (
 // New ...
 func New(opts *Options) (*genny.Generator, error) {
 	g := genny.New()
-	if err := g.Box(packr.New("app/templates", "../app/templates")); err != nil {
+	if err := g.Box(packr.NewBox("./templates")); err != nil {
 		return g, err
 	}
 	ctx := plush.NewContext()

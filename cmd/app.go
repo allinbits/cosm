@@ -16,7 +16,6 @@ var appCmd = &cobra.Command{
 	Short: "Generates an empty application boilerplate",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("cosm app")
 		var appName string
 		if t := strings.Split(args[0], "/"); len(t) > 0 {
 			appName = t[len(t)-1]
