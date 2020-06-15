@@ -32,7 +32,7 @@ cosm serve
 
 To start the server, go into you application's directory and run `cosm serve`. This commands installs dependencies, builds and initializes the app and runs both Tendermint RPC server (by defalut on `localhost:26657`) as well as LCD (by defalut on `localhost:1317`).
 
-Note: depending on ypur OS and firewall settings, you may have to accept a prompt asking if you application's binary (`blogd` in this case) can accept external connections.
+Note: depending on your OS and firewall settings, you may have to accept a prompt asking if your application's binary (`blogd` in this case) can accept external connections.
 
 ## Creating types
 
