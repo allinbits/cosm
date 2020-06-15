@@ -5,6 +5,8 @@ builds:
         - cmd: make ui
     env:
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X "github.com/allinbits/cosm/runtime.Version={{.Tag}}"
     goos:
       - darwin
     goarch:
