@@ -60,6 +60,7 @@ var serveCmd = &cobra.Command{
 		if err := cmdREST.Start(); err != nil {
 			log.Fatal(fmt.Sprintf("Error in running %[1]vcli rest-server", appName))
 		}
+		fmt.Printf("🔧 Running dev interface at http://localhost:12345\n\n")
 		setupCloseHandler(cmdTendermint, cmdREST)
 		router := mux.NewRouter()
 		cosmUI := packr.New("ui/dist", "../ui/dist")
