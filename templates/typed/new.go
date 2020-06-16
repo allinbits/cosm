@@ -22,7 +22,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn((querierModify(opts)))
 	g.RunFn((keeperQuerierModify(opts)))
 	g.RunFn((clientRestRestModify(opts)))
-	if err := g.Box(packr.New("typed/templates", "./templates")); err != nil {
+	if err := g.Box(packr.New("typed/templates", "../typed/templates")); err != nil {
 		return g, err
 	}
 	ctx := plush.NewContext()
