@@ -1,30 +1,38 @@
 name: goreleaser
+
 on:
   push:
     tags:
       - "*"
+
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Unshallow
-        run: git fetch --prune --unshallow
       - name: Set up Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2
         with:
           go-version: 1.14
-      - uses: actions/setup-node@v2-beta
+
+      - name: Set up packr2
+        run: go get -u github.com/gobuffalo/packr/v2/packr2
+
+      - name: Set up Node
+        uses: actions/setup-node@v2-beta
         with:
           node-version: "14"
-      - name: make ui
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build UI
         run: make ui
+
       - name: Run packr2
-        run: |
-          export PATH=$PATH:$(go env GOPATH)/bin
-          go get -u github.com/gobuffalo/packr/v2/packr2
-          packr2
+        run: GO111MODULE=on packr2
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
