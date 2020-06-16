@@ -1,7 +1,7 @@
 builds:
   - hooks:
       pre:
-        - go mod tidy
+        - packr2
 brews:
   - name: "cosm"
     description: "CLI tool for developing Cosmos SDK apps."
