@@ -1,3 +1,10 @@
+builds:
+  - hooks:
+      pre:
+        - go get -u github.com/gobuffalo/packr/v2/packr2
+        - make ui
+        - packr2
+        - sleep 5
 brews:
   - name: "cosm"
     description: "CLI tool for developing Cosmos SDK apps."

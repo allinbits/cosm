@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/genny"
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/gobuffalo/plush"
 	"github.com/gobuffalo/plushgen"
 )
@@ -22,7 +22,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn((querierModify(opts)))
 	g.RunFn((keeperQuerierModify(opts)))
 	g.RunFn((clientRestRestModify(opts)))
-	if err := g.Box(packr.NewBox("./templates")); err != nil {
+	if err := g.Box(packr.New("typed/templates", "./templates")); err != nil {
 		return g, err
 	}
 	ctx := plush.NewContext()

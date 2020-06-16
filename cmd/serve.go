@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	rice "github.com/GeertJohan/go.rice"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 )
@@ -62,8 +62,8 @@ var serveCmd = &cobra.Command{
 		}
 		setupCloseHandler(cmdTendermint, cmdREST)
 		router := mux.NewRouter()
-		cosmUI, _ := rice.FindBox("../ui/dist")
-		router.PathPrefix("/").Handler(http.FileServer(cosmUI.HTTPBox()))
+		cosmUI := packr.New("ui/dist", "../ui/dist")
+		router.PathPrefix("/").Handler(http.FileServer(cosmUI))
 		log.Fatal(http.ListenAndServe(":12345", router))
 	},
 }

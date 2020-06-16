@@ -4,7 +4,9 @@ mod:
 	@go mod tidy
 
 build: mod
+	@packr2
 	@go build -mod=readonly -o build/cosmos main.go
+	@packr2 clean
 
 ui:
 	@rm -rf ui/dist
@@ -17,5 +19,5 @@ build-ui: build ui
 
 install: build ui
 	@go install -mod=readonly ./...
-
+	
 .PHONY: all mod build ui install cli build-ui
