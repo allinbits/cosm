@@ -25,7 +25,6 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
           go get -u github.com/gobuffalo/packr/v2/packr2
           packr2
-          go mod tidy
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
