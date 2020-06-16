@@ -23,7 +23,8 @@ jobs:
       - name: Run packr2
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
-          GO111MODULE=off go get -u github.com/gobuffalo/packr/v2/packr2
+          go get -u github.com/gobuffalo/packr/v2/packr2
+          packr2
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
