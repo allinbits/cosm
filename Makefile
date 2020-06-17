@@ -16,5 +16,8 @@ ui:
 
 install: build ui
 	@go install -mod=readonly ./...
+
+cli: build
+	@go install -mod=readonly ./...
 	
 .PHONY: all mod build ui install

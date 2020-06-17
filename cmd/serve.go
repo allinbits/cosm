@@ -68,3 +68,20 @@ var serveCmd = &cobra.Command{
 		log.Fatal(http.ListenAndServe(":12345", router))
 	},
 }
+
+var startCmd = &cobra.Command{
+	Use:   "start",
+	Short: "Launches a hot-reloading application server.",
+	Args:  cobra.ExactArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		cmdAirGet := exec.Command("/bin/sh", "-c", "GO111MODULE=off go get github.com/cosmtrek/air")
+		if err := cmdAirGet.Run(); err != nil {
+			log.Fatal("Error in enabling hot-reload with Air.")
+		}
+		cmdAir := exec.Command("/bin/sh", "-c", "air")
+		cmdAir.Stdout = os.Stdout
+		if err := cmdAir.Run(); err != nil {
+			log.Fatal("Error in running `cosm serve` with `air`.")
+		}
+	},
+}

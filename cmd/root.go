@@ -28,6 +28,7 @@ func init() {
 	rootCmd.AddCommand(appCmd)
 	rootCmd.AddCommand(typedCmd)
 	rootCmd.AddCommand(serveCmd)
+	rootCmd.AddCommand(startCmd)
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
