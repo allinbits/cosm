@@ -5,7 +5,7 @@ mod:
 
 build: mod
 	@packr2
-	@go build -mod=readonly -o build/cosmos main.go
+	@go build -mod=readonly -o build/cosm main.go
 	@packr2 clean
 
 ui:
