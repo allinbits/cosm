@@ -74,10 +74,10 @@ var startCmd = &cobra.Command{
 	Short: "Launches a hot-reloading application server.",
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("📦 Making sure hot-reloading is enabled...\n")
+		fmt.Printf("📦 Making sure hot reloading is enabled...\n")
 		cmdAirGet := exec.Command("/bin/sh", "-c", "GO111MODULE=off go get github.com/cosmtrek/air")
 		if err := cmdAirGet.Run(); err != nil {
-			log.Fatal("Error in enabling hot-reload with air.")
+			log.Fatal("Error in enabling hot reload with air.")
 		}
 		cmdAir := exec.Command("/bin/sh", "-c", "air")
 		cmdAir.Stdout = os.Stdout
