@@ -4,11 +4,29 @@ Code scaffolding tool `cosm` for Cosmos SDK applications.
 
 ## Installation
 
+### macOS
+
+```
+brew install allinbits/tap/cosm
+```
+
+### GNU/Linux
+
+Will be released as a Snap soon. Use `go get` or `git clone` until then.
+
+### Go
+
 ```
 go get github.com/allinbits/cosm
 ```
 
-Note: Make sure to run this command outside of an existing Go project, otherwise it will be added as a dependency to `go.mod`.
+Note: Make sure to run this command outside of an existing Go project, otherwise it will be added as a dependency to the project's `go.mod`.
+
+### Custom
+
+```
+git clone https://github.com/allinbits/cosm && cd cosm && make
+```
 
 ## Creating an application
 
