@@ -1,4 +1,4 @@
 [build]
 cmd = "go mod tidy && make"
-full_bin = "cosm serve"
+full_bin = "cosm start"
 exclude_dir = ["ui"]
