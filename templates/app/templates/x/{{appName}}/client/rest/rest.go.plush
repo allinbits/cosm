@@ -9,4 +9,5 @@ import (
 // RegisterRoutes registers <%= AppName %>-related REST handlers to a router
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 
+	r.HandleFunc("/faucet", faucetHandler(cliCtx)).Methods("POST")
 }
