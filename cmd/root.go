@@ -29,6 +29,7 @@ func init() {
 	rootCmd.AddCommand(typedCmd)
 	rootCmd.AddCommand(serveCmd)
 	rootCmd.AddCommand(startCmd)
+	appCmd.Flags().StringP("denom", "d", "token", "Token denomination")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 

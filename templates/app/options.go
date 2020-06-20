@@ -4,6 +4,7 @@ package app
 type Options struct {
 	AppName    string
 	ModulePath string
+	Denom      string
 }
 
 // Validate that options are usuable

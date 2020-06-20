@@ -11,6 +11,7 @@ import (
 
 // New ...
 func New(opts *Options) (*genny.Generator, error) {
+	fmt.Println(opts.Denom)
 	g := genny.New()
 	if err := g.Box(packr.New("app/templates", "./templates")); err != nil {
 		return g, err
@@ -18,6 +19,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	ctx := plush.NewContext()
 	ctx.Set("ModulePath", opts.ModulePath)
 	ctx.Set("AppName", opts.AppName)
+	ctx.Set("Denom", opts.Denom)
 	g.Transformer(plushgen.Transformer(ctx))
 	g.Transformer(genny.Replace("{{appName}}", fmt.Sprintf("%s", opts.AppName)))
 	return g, nil
