@@ -48,17 +48,15 @@ cosm app github.com/example/blog
 cosm serve
 ```
 
-To start the server, go into you application's directory and run `cosm serve`. This commands installs dependencies, builds and initializes the app and runs both Tendermint RPC server (by default on `localhost:26657`) as well as LCD (by default on `localhost:1317`).
+To start the server, go into you application's directory and run `cosm serve`. This commands installs dependencies, builds and initializes the app and runs both Tendermint RPC server (by default on `localhost:26657`) as well as LCD (by default on `localhost:1317`) with hot reloading enabled.
 
 Note: depending on your OS and firewall settings, you may have to accept a prompt asking if your application's binary (`blogd` in this case) can accept external connections.
 
-### Hot reloading
+### Start without hot reloading
 
 ```
 cosm start
 ```
-
-Installs `air` and runs `cosm serve` with hot reloading enabled.
 
 ## Creating types
 
@@ -77,3 +75,7 @@ cosm type post title body
 This command generates a type `Post` with two fields: `title` and `body`.
 
 To add a post run `blogcli tx blog create-post "My title" "This is a blog" --from=me`.
+
+## Front-end application
+
+By default the generator creates a front-end application in `ui` directory. If you have Node.js installed, run `cd ui && npm i && npm run serve` to launch the app. With this app you can generate accounts, request tokens from a faucet, list and create objects generated with `cosm type`.

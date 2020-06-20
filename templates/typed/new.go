@@ -22,6 +22,8 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn((querierModify(opts)))
 	g.RunFn((keeperQuerierModify(opts)))
 	g.RunFn((clientRestRestModify(opts)))
+	g.RunFn((uiIndexModify(opts)))
+	g.RunFn((uiScriptModify(opts)))
 	if err := g.Box(packr.New("typed/templates", "./templates")); err != nil {
 		return g, err
 	}
@@ -171,6 +173,7 @@ func keeperQuerierModify(opts *Options) genny.RunFn {
 		if err != nil {
 			return err
 		}
+		replaceContentTypes := fmt.Sprintf(`"%[1]v/x/%[2]v/types"`, opts.ModulePath, opts.AppName)
 		replaceContentImport := fmt.Sprintf(`import (
 	"%[1]v/x/%[2]v/types"
 `, opts.ModulePath, opts.AppName)
@@ -178,7 +181,8 @@ func keeperQuerierModify(opts *Options) genny.RunFn {
 		case types.QueryList%[1]v:
 			return list%[1]v(ctx, k)
 		default:`, strings.Title(opts.TypeName))
-		content := strings.Replace(f.String(), "import (", replaceContentImport, 1)
+		content := strings.Replace(f.String(), replaceContentTypes, "", 1)
+		content = strings.Replace(content, "import (", replaceContentImport, 1)
 		content = strings.Replace(content, "default:", replaceContentDefault, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
@@ -193,8 +197,58 @@ func clientRestRestModify(opts *Options) genny.RunFn {
 			return err
 		}
 		replaceContent := fmt.Sprintf(`func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/%[1]v/%[3]v", list%[2]vHandler(cliCtx, "%[1]v")).Methods("GET")`, opts.AppName, strings.Title(opts.TypeName), opts.TypeName)
+	r.HandleFunc("/%[1]v/%[3]v", list%[2]vHandler(cliCtx, "%[1]v")).Methods("GET")
+	r.HandleFunc("/%[1]v/%[3]v", create%[2]vHandler(cliCtx)).Methods("POST")
+			`, opts.AppName, strings.Title(opts.TypeName), opts.TypeName)
 		content := strings.Replace(f.String(), "func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {", replaceContent, 1)
+		newFile := genny.NewFileS(path, content)
+		return r.File(newFile)
+	}
+}
+
+func uiIndexModify(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		path := "ui/index.html"
+		f, err := r.Disk.Find(path)
+		if err != nil {
+			return err
+		}
+		replaceString := "<script src=\"script.js\"></script>"
+		replaceContent := fmt.Sprintf(`
+			<h2>List of "%[1]v" items</h2>
+			<div class="type-%[1]v-list-%[1]v"></div>
+      <h3>Create a new %[1]v:</h3>
+		`, opts.TypeName)
+		for _, field := range opts.Fields {
+			replaceContent = replaceContent + fmt.Sprintf(`
+			<input placeholder="%[1]v" class="type-%[2]v-field-%[1]v" type="text" />
+			`, field.Name, opts.TypeName)
+		}
+		replaceContent = replaceContent + fmt.Sprintf(`
+			<button class="type-%[1]v-create">Create %[1]v</button>
+		`, opts.TypeName) + "  " + replaceString
+		content := strings.Replace(f.String(), replaceString, replaceContent, 1)
+		newFile := genny.NewFileS(path, content)
+		return r.File(newFile)
+	}
+}
+
+func uiScriptModify(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		path := "ui/script.js"
+		f, err := r.Disk.Find(path)
+		if err != nil {
+			return err
+		}
+		fields := ""
+		for _, field := range opts.Fields {
+			fields = fields + fmt.Sprintf("\"%[1]v\", ", field.Name)
+		}
+		replaceString := "const types = ["
+		replaceContent := replaceString + fmt.Sprintf(`
+	["%[1]v", [%[2]v]],
+		`, opts.TypeName, fields)
+		content := strings.Replace(f.String(), replaceString, replaceContent, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}

@@ -53,13 +53,14 @@ var startCmd = &cobra.Command{
 		if err := cmdInit.Run(); err != nil {
 			log.Fatal("Error in initializing the chain. Please, check ./init.sh")
 		}
+		fmt.Printf("🎨 Created a web front-end: cd ui && npm i && npm run serve\n")
 		fmt.Printf("🌍 Running a server at http://localhost:26657 (Tendermint)\n")
 		cmdTendermint := exec.Command("/bin/sh", "-c", fmt.Sprintf("%[1]vd start", appName))
 		cmdTendermint.Stdout = os.Stdout
 		if err := cmdTendermint.Start(); err != nil {
 			log.Fatal(fmt.Sprintf("Error in running %[1]vd start", appName))
 		}
-		fmt.Printf("🌍 Running a server at http://localhost:1317 (LCD)\n\n")
+		fmt.Printf("🌍 Running a server at http://localhost:1317 (LCD)\n")
 		cmdREST := exec.Command(fmt.Sprintf("%[1]vcli", appName), "rest-server")
 		cmdREST.Stdout = os.Stdout
 		if err := cmdREST.Start(); err != nil {

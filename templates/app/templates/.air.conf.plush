@@ -1,3 +1,4 @@
 [build]
 cmd = "go mod tidy && make"
 full_bin = "cosm serve"
+exclude_dir = ["ui"]
