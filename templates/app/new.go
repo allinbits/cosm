@@ -12,7 +12,6 @@ import (
 
 // New ...
 func New(opts *Options) (*genny.Generator, error) {
-	fmt.Println(opts.Denom)
 	g := genny.New()
 	if err := g.Box(packr.New("app/templates", "./templates")); err != nil {
 		return g, err
