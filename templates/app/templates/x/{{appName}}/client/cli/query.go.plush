@@ -29,7 +29,7 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 	<%= AppName %>QueryCmd.AddCommand(
 		flags.GetCommands(
-		// TODO: Add query Cmds
+      // this line is used by startport scaffolding
 		)...,
 	)
 

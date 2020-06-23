@@ -13,7 +13,7 @@ import (
 
 var appCmd = &cobra.Command{
 	Use:   "app [github.com/org/repo]",
-	Short: "Generates an empty application boilerplate",
+	Short: "Generates an empty application",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		denom, _ := cmd.Flags().GetString("denom")

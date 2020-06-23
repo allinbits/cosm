@@ -15,11 +15,11 @@ func New(opts *Options) (*genny.Generator, error) {
 	g := genny.New()
 	g.RunFn(handlerModify(opts))
 	g.RunFn(aliasModify(opts))
-	g.RunFn(keyModify(opts))
-	g.RunFn((codecModify(opts)))
-	g.RunFn((cliTxModify(opts)))
-	g.RunFn((cliQueryModify(opts)))
-	g.RunFn((querierModify(opts)))
+	g.RunFn(typesKeyModify(opts))
+	g.RunFn((typesCodecModify(opts)))
+	g.RunFn((clientCliTxModify(opts)))
+	g.RunFn((clientCliQueryModify(opts)))
+	g.RunFn((typesQuerierModify(opts)))
 	g.RunFn((keeperQuerierModify(opts)))
 	g.RunFn((clientRestRestModify(opts)))
 	g.RunFn((uiIndexModify(opts)))
@@ -51,6 +51,11 @@ func New(opts *Options) (*genny.Generator, error) {
 	return g, nil
 }
 
+const placeholder = "// this line is used by startport scaffolding"
+const placeholder2 = "// this line is used by startport scaffolding # 2"
+const placeholder3 = "// this line is used by startport scaffolding # 3"
+const placeholder4 = "<!-- this line is used by startport scaffolding # 4 -->"
+
 func handlerModify(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		path := fmt.Sprintf("x/%s/handler.go", opts.AppName)
@@ -58,10 +63,11 @@ func handlerModify(opts *Options) genny.RunFn {
 		if err != nil {
 			return err
 		}
-		replaceContent := fmt.Sprintf(`case MsgCreate%[1]v:
-			return handleMsgCreate%[1]v(ctx, k, msg)
-		default:`, strings.Title(opts.TypeName))
-		content := strings.Replace(f.String(), "default:", replaceContent, 1)
+		template := `%[1]v
+		case MsgCreate%[2]v:
+			return handleMsgCreate%[2]v(ctx, k, msg)`
+		replacement := fmt.Sprintf(template, placeholder, strings.Title(opts.TypeName))
+		content := strings.Replace(f.String(), placeholder, replacement, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
@@ -88,7 +94,7 @@ type (
 	}
 }
 
-func keyModify(opts *Options) genny.RunFn {
+func typesKeyModify(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		path := fmt.Sprintf("x/%s/types/key.go", opts.AppName)
 		f, err := r.Disk.Find(path)
@@ -105,62 +111,65 @@ const (
 	}
 }
 
-func codecModify(opts *Options) genny.RunFn {
+func typesCodecModify(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		path := fmt.Sprintf("x/%s/types/codec.go", opts.AppName)
 		f, err := r.Disk.Find(path)
 		if err != nil {
 			return err
 		}
-		replaceContent := fmt.Sprintf(`func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgCreate%[1]v{}, "%[2]v/Create%[1]v", nil)
-`, strings.Title(opts.TypeName), opts.AppName)
-		content := strings.Replace(f.String(), "func RegisterCodec(cdc *codec.Codec) {", replaceContent, 1)
+		template := `%[1]v
+		cdc.RegisterConcrete(MsgCreate%[2]v{}, "%[3]v/Create%[2]v", nil)`
+		replacement := fmt.Sprintf(template, placeholder, strings.Title(opts.TypeName), opts.AppName)
+		content := strings.Replace(f.String(), placeholder, replacement, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
 }
 
-func cliTxModify(opts *Options) genny.RunFn {
+func clientCliTxModify(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		path := fmt.Sprintf("x/%s/client/cli/tx.go", opts.AppName)
 		f, err := r.Disk.Find(path)
 		if err != nil {
 			return err
 		}
-		replaceContent := fmt.Sprintf(`TxCmd.AddCommand(flags.PostCommands(
-	  GetCmdCreate%[1]v(cdc),`, strings.Title(opts.TypeName), opts.AppName)
-		content := strings.Replace(f.String(), "TxCmd.AddCommand(flags.PostCommands(", replaceContent, 1)
+		template := `%[1]v
+		GetCmdCreate%[2]v(cdc),`
+		replacement := fmt.Sprintf(template, placeholder, strings.Title(opts.TypeName))
+		content := strings.Replace(f.String(), placeholder, replacement, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
 }
 
-func cliQueryModify(opts *Options) genny.RunFn {
+func clientCliQueryModify(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		path := fmt.Sprintf("x/%s/client/cli/query.go", opts.AppName)
 		f, err := r.Disk.Find(path)
 		if err != nil {
 			return err
 		}
-		replaceContent := fmt.Sprintf(`flags.GetCommands(
-			GetCmdList%[1]v(queryRoute, cdc),`, strings.Title(opts.TypeName))
-		content := strings.Replace(f.String(), "flags.GetCommands(", replaceContent, 1)
+		template := `%[1]v
+			GetCmdList%[2]v(queryRoute, cdc),`
+		replacement := fmt.Sprintf(template, placeholder, strings.Title(opts.TypeName))
+		content := strings.Replace(f.String(), placeholder, replacement, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
 }
 
-func querierModify(opts *Options) genny.RunFn {
+func typesQuerierModify(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		path := fmt.Sprintf("x/%s/types/querier.go", opts.AppName)
 		f, err := r.Disk.Find(path)
 		if err != nil {
 			return err
 		}
-		content := f.String() + fmt.Sprintf(`
+		template := `
 const (QueryList%[2]v = "list-%[1]v")
-`, opts.TypeName, strings.Title(opts.TypeName))
+		`
+		content := f.String() + fmt.Sprintf(template, opts.TypeName, strings.Title(opts.TypeName))
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
@@ -173,17 +182,20 @@ func keeperQuerierModify(opts *Options) genny.RunFn {
 		if err != nil {
 			return err
 		}
-		replaceContentTypes := fmt.Sprintf(`"%[1]v/x/%[2]v/types"`, opts.ModulePath, opts.AppName)
-		replaceContentImport := fmt.Sprintf(`import (
-	"%[1]v/x/%[2]v/types"
-`, opts.ModulePath, opts.AppName)
-		replaceContentDefault := fmt.Sprintf(`
-		case types.QueryList%[1]v:
-			return list%[1]v(ctx, k)
-		default:`, strings.Title(opts.TypeName))
-		content := strings.Replace(f.String(), replaceContentTypes, "", 1)
-		content = strings.Replace(content, "import (", replaceContentImport, 1)
-		content = strings.Replace(content, "default:", replaceContentDefault, 1)
+		template := `"%[1]v/x/%[2]v/types"`
+		template2 := `%[1]v
+	"%[2]v/x/%[3]v/types"
+		`
+		template3 := `%[1]v
+		case types.QueryList%[2]v:
+			return list%[2]v(ctx, k)`
+		replacement := fmt.Sprintf(template, opts.ModulePath, opts.AppName)
+		replacement2 := fmt.Sprintf(template2, placeholder, opts.ModulePath, opts.AppName)
+		replacement3 := fmt.Sprintf(template3, placeholder2, strings.Title(opts.TypeName))
+		content := f.String()
+		content = strings.Replace(content, replacement, "", 1)
+		content = strings.Replace(content, placeholder, replacement2, 1)
+		content = strings.Replace(content, placeholder2, replacement3, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
@@ -196,11 +208,11 @@ func clientRestRestModify(opts *Options) genny.RunFn {
 		if err != nil {
 			return err
 		}
-		replaceContent := fmt.Sprintf(`func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/%[1]v/%[3]v", list%[2]vHandler(cliCtx, "%[1]v")).Methods("GET")
-	r.HandleFunc("/%[1]v/%[3]v", create%[2]vHandler(cliCtx)).Methods("POST")
-			`, opts.AppName, strings.Title(opts.TypeName), opts.TypeName)
-		content := strings.Replace(f.String(), "func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {", replaceContent, 1)
+		template := `%[1]v
+	r.HandleFunc("/%[2]v/%[4]v", list%[3]vHandler(cliCtx, "%[2]v")).Methods("GET")
+	r.HandleFunc("/%[2]v/%[4]v", create%[3]vHandler(cliCtx)).Methods("POST")`
+		replacement := fmt.Sprintf(template, placeholder, opts.AppName, strings.Title(opts.TypeName), opts.TypeName)
+		content := strings.Replace(f.String(), placeholder, replacement, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
@@ -213,21 +225,18 @@ func uiIndexModify(opts *Options) genny.RunFn {
 		if err != nil {
 			return err
 		}
-		replaceString := "<script src=\"script.js\"></script>"
-		replaceContent := fmt.Sprintf(`
+		template := fmt.Sprintf(`
 			<h2>List of "%[1]v" items</h2>
 			<div class="type-%[1]v-list-%[1]v"></div>
-      <h3>Create a new %[1]v:</h3>
-		`, opts.TypeName)
+      <h3>Create a new %[1]v:</h3>`, opts.TypeName)
 		for _, field := range opts.Fields {
-			replaceContent = replaceContent + fmt.Sprintf(`
-			<input placeholder="%[1]v" class="type-%[2]v-field-%[1]v" type="text" />
-			`, field.Name, opts.TypeName)
+			template = template + fmt.Sprintf(`
+			<input placeholder="%[1]v" class="type-%[2]v-field-%[1]v" type="text" />`, field.Name, opts.TypeName)
 		}
-		replaceContent = replaceContent + fmt.Sprintf(`
+		template = template + fmt.Sprintf(`
 			<button class="type-%[1]v-create">Create %[1]v</button>
-		`, opts.TypeName) + "  " + replaceString
-		content := strings.Replace(f.String(), replaceString, replaceContent, 1)
+		`, opts.TypeName) + "  " + placeholder4
+		content := strings.Replace(f.String(), placeholder4, template, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}
@@ -244,11 +253,10 @@ func uiScriptModify(opts *Options) genny.RunFn {
 		for _, field := range opts.Fields {
 			fields = fields + fmt.Sprintf("\"%[1]v\", ", field.Name)
 		}
-		replaceString := "const types = ["
-		replaceContent := replaceString + fmt.Sprintf(`
-	["%[1]v", [%[2]v]],
-		`, opts.TypeName, fields)
-		content := strings.Replace(f.String(), replaceString, replaceContent, 1)
+		template := `%[1]v
+	["%[2]v", [%[3]v]],`
+		replacement := fmt.Sprintf(template, placeholder, opts.TypeName, fields)
+		content := strings.Replace(f.String(), placeholder, replacement, 1)
 		newFile := genny.NewFileS(path, content)
 		return r.File(newFile)
 	}

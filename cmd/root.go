@@ -28,6 +28,7 @@ func init() {
 	rootCmd.AddCommand(appCmd)
 	rootCmd.AddCommand(typedCmd)
 	rootCmd.AddCommand(serveCmd)
+	serveCmd.Flags().BoolP("verbose", "v", false, "Verbose output")
 	appCmd.Flags().StringP("denom", "d", "token", "Token denomination")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
