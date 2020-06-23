@@ -12,17 +12,9 @@ brew install allinbits/tap/cosm
 
 ### GNU/Linux
 
-Will be released as a Snap soon. Use `go get` or `git clone` until then.
+Will be released as a Snap soon. Use `git clone` until then.
 
-### Go
-
-```
-go get github.com/allinbits/cosm
-```
-
-Note: Make sure to run this command outside of an existing Go project, otherwise it will be added as a dependency to the project's `go.mod`.
-
-### Custom
+### Build locally
 
 ```
 git clone https://github.com/allinbits/cosm && cd cosm && make
