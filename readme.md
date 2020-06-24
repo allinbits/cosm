@@ -1,1 +1,1 @@
-# Moved to https://github.com/tendermint/starport
+## Moved to https://github.com/tendermint/starport
