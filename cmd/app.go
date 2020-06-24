@@ -31,6 +31,6 @@ var appCmd = &cobra.Command{
 		pwd, _ := os.Getwd()
 		run.Root = pwd + "/" + appName
 		run.Run()
-		fmt.Printf("\n🚀 Successfully created a Cosmos project `%[1]v`.\n\n", appName)
+		fmt.Printf("\n⭐️ Successfully created a Cosmos app `%[1]v`.\n\n", appName)
 	},
 }
