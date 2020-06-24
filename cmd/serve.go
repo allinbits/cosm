@@ -42,7 +42,7 @@ func startServe(verbose bool) (*exec.Cmd, *exec.Cmd) {
 	}
 	fmt.Printf("🎨 Created a web front-end: cd ui && npm i && npm run serve\n")
 	fmt.Printf("🌍 Running a server at http://localhost:26657 (Tendermint)\n")
-	cmdTendermint := exec.Command("blogd", "start")
+	cmdTendermint := exec.Command(fmt.Sprintf("%[1]vd", appName), "start")
 	if verbose {
 		cmdTendermint.Stdout = os.Stdout
 	}
